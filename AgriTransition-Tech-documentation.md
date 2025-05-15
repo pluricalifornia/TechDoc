@@ -103,7 +103,6 @@ Framework: Python with NumPy, Pandas, and SciPy
 Processing: Celery tasks for computationally intensive calculations
 Database: PostgreSQL with dedicated tables for economic models and parameters
 
-    ```python
     // Economic modeling module
     import numpy as np
     import pandas as pd
