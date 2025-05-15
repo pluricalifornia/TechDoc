@@ -4,18 +4,18 @@
 The AgriTransition platform is designed as a specialized OSF add-on that bridges the gap between agricultural research and practical farming implementations. This document outlines the technical architecture, components, and implementation details aligned with OSF's GraveyValet microservice architecture.
 
 ### 1.1 Architecture Diagram
-┌─────────────────────────────────────────────────────────────────────┐
-│                      AgriTransition Platform                        │
-├──────────────┬───────────────────┬────────────────┬─────────────────┤
-│ Frontend     │ GravyValet Imp    │ Processing     │ Data Storage    │
-│ Angular.js   │ Interface Layer   │ Celery/Redis   │ PostgreSQL      │
-└───────┬──────┴─────────┬─────────┴───────┬────────┴────────┬────────┘
-        │                │                 │                 │
-        ▼                ▼                 ▼                 ▼
-┌─────────────────┬──────────────────┬───────────────┬──────────────────┐
-│ User Interface  │ OSF Integration  │ Computation   │ Search Services  │
-│ Components      │ via GravyValet   │ Services      │                  │
-└─────────────────┴──────────────────┴───────────────┴──────────────────┘
+flowchart TD
+    subgraph Platform["AgriTransition Platform"]
+        FE["Frontend\nAngular.js"]
+        GV["GravyValet Imp\nInterface Layer"]
+        PR["Processing\nCelery/Redis"]
+        DS["Data Storage\nPostgreSQL"]
+    end
+    
+    FE --> UI["User Interface\nComponents"]
+    GV --> OSF["OSF Integration\nvia GravyValet"]
+    PR --> CS["Computation\nServices"]
+    DS --> SS["Search Services"]
 
 ## 2. Technology Stack
 
