@@ -94,7 +94,6 @@ This module transforms complex agricultural research data into intuitive visuali
       // Full implementation abbreviated for clarity
     }
   }
-  ```javascript
 
 ### 3.2 Economic Benefit Modeling Engine
 This engine calculates the financial implications of transitioning to agroecological practices.
@@ -104,16 +103,16 @@ Framework: Python with NumPy, Pandas, and SciPy
 Processing: Celery tasks for computationally intensive calculations
 Database: PostgreSQL with dedicated tables for economic models and parameters
 
-// Economic modeling module
-import numpy as np
-import pandas as pd
-from scipy.optimize import minimize
-from celery import shared_task
-
-@shared_task
-def calculate_transition_roi(farm_data, practice_id, time_horizon=5):
-    """
-    Calculate Return on Investment for transitioning to a specific practice
+    // Economic modeling module
+    import numpy as np
+    import pandas as pd
+    from scipy.optimize import minimize
+    from celery import shared_task
+    
+    @shared_task
+    def calculate_transition_roi(farm_data, practice_id, time_horizon=5):
+        """
+        Calculate Return on Investment for transitioning to a specific practice
     
     Args:
         farm_data: Dictionary containing farm parameters
@@ -227,27 +226,27 @@ def calculate_transition_roi(farm_data, practice_id, time_horizon=5):
     
     return results
 
-def calculate_npv(cash_flows, discount_rate):
-    """Calculate Net Present Value of cash flows"""
-    return np.npv(discount_rate, cash_flows)
-
-def calculate_irr(cash_flows):
-    """Calculate Internal Rate of Return"""
-    try:
-        return np.irr(cash_flows)
-    except:
-        # IRR calculation can fail if no solution exists
-        return None
-
-def calculate_risk_scenarios(farm_data, practice, base_projections, regional_params):
-    """Generate risk scenarios for the economic projections"""
-    # This would implement Monte Carlo simulation or similar methods
-    # to model different outcomes based on weather variability, market fluctuations, etc.
-    return {
-        'pessimistic': model_risk_scenario(base_projections, 'pessimistic', regional_params),
-        'most_likely': base_projections,
-        'optimistic': model_risk_scenario(base_projections, 'optimistic', regional_params)
-    }
+    def calculate_npv(cash_flows, discount_rate):
+        """Calculate Net Present Value of cash flows"""
+        return np.npv(discount_rate, cash_flows)
+    
+    def calculate_irr(cash_flows):
+        """Calculate Internal Rate of Return"""
+        try:
+            return np.irr(cash_flows)
+        except:
+            # IRR calculation can fail if no solution exists
+            return None
+    
+    def calculate_risk_scenarios(farm_data, practice, base_projections, regional_params):
+        """Generate risk scenarios for the economic projections"""
+        # This would implement Monte Carlo simulation or similar methods
+        # to model different outcomes based on weather variability, market fluctuations, etc.
+        return {
+            'pessimistic': model_risk_scenario(base_projections, 'pessimistic', regional_params),
+            'most_likely': base_projections,
+            'optimistic': model_risk_scenario(base_projections, 'optimistic', regional_params)
+        }
 
 ### 3.3 Practice Selection System
 This system helps farmers identify which agroecological practices are most appropriate for their specific context.
@@ -284,14 +283,14 @@ def anonymize_farm_data(farm_id, aggregation_level='county'):
 ### 4.1 Interface Implementation
 The AgriTransition platform registers with OSF as a GravyValet add-on by implementing the appropriate interfaces. Since our service supports both data storage and archival capabilities, we'll implement multiple interfaces:
 
-// Example Storage Interface Implementation
-from addon_toolkit.interfaces import StorageInterface
-from addon_toolkit.interfaces.storage import ItemType, ItemSampleResult, FolderResult
-from addon_toolkit.operations import immediate_operation, redirect_operation, eventual_operation
-from addon_toolkit.interfaces.common import AddonCapabilities
-
-class AgriTransitionStorageImp(StorageInterface):
-    """Implementation of Storage Interface for AgriTransition data"""
+    // Example Storage Interface Implementation
+    from addon_toolkit.interfaces import StorageInterface
+    from addon_toolkit.interfaces.storage import ItemType, ItemSampleResult, FolderResult
+    from addon_toolkit.operations import immediate_operation, redirect_operation, eventual_operation
+    from addon_toolkit.interfaces.common import AddonCapabilities
+    
+    class AgriTransitionStorageImp(StorageInterface):
+        """Implementation of Storage Interface for AgriTransition data"""
     
     @immediate_operation(capability=AddonCapabilities.ACCESS)
     async def list_child_items(
@@ -373,11 +372,11 @@ class AgriTransitionStorageImp(StorageInterface):
         pass
 
 # Also implement the Archival Interface for data preservation functionality
-from addon_toolkit.interfaces import ArchivalInterface
-from addon_toolkit.interfaces.archival import RepositoryInfo, DatasetInfo, DatasetCreationResult, DatasetPublishResult
-
-class AgriTransitionArchivalImp(ArchivalInterface):
-    """Implementation of Archival Interface for preserving agricultural research data"""
+    from addon_toolkit.interfaces import ArchivalInterface
+    from addon_toolkit.interfaces.archival import RepositoryInfo, DatasetInfo, DatasetCreationResult, DatasetPublishResult
+    
+    class AgriTransitionArchivalImp(ArchivalInterface):
+        """Implementation of Archival Interface for preserving agricultural research data"""
     
     @immediate_operation(capability=AddonCapabilities.ACCESS)
     async def get_repository_info(self) -> RepositoryInfo:
@@ -406,17 +405,17 @@ class AgriTransitionArchivalImp(ArchivalInterface):
 ### 4.2 Service Registration
 Register the AgriTransition service with GravyValet:
 // Registration in known_imps.py
-_KnownAddonImps = {
-    # ... existing imps
-    "agritransition_storage": "addon_imps.storage.agritransition:AgriTransitionStorageImp",
-    "agritransition_archival": "addon_imps.archival.agritransition:AgriTransitionArchivalImp",
-}
-
-_AddonImpNumbers = {
-    # ... existing mappings
-    "agritransition_storage": 42,
-    "agritransition_archival": 43,
-}
+        _KnownAddonImps = {
+            # ... existing imps
+            "agritransition_storage": "addon_imps.storage.agritransition:AgriTransitionStorageImp",
+            "agritransition_archival": "addon_imps.archival.agritransition:AgriTransitionArchivalImp",
+        }
+        
+        _AddonImpNumbers = {
+            # ... existing mappings
+            "agritransition_storage": 42,
+            "agritransition_archival": 43,
+        }
 
 ### 4.3 Authentication Implementation
 // Service configuration example
@@ -473,9 +472,9 @@ Securely store and share farm data with appropriate permissions
 Apply specialized metadata to enhance discoverability of agricultural research
 
 // Create an OSF preregistration template
-def create_implementation_preregistration(implementation_plan_id):
-    """
-    Create an OSF preregistration for a farm implementation plan
+      def create_implementation_preregistration(implementation_plan_id):
+          """
+          Create an OSF preregistration for a farm implementation plan
     
     Args:
         implementation_plan_id: ID of the implementation plan
@@ -701,15 +700,15 @@ def blur_farm_location(lat, long, blur_radius_km=5):
    """
    Aggregate individual farm data to regional level
    
-   Args:
-       metric: The farm metric to aggregate (e.g., 'soil_organic_matter')
-       region_type: Geographical aggregation level ('county', 'watershed', etc.)
-       
-   Returns:
-       DataFrame with aggregated statistics by region
-   """
-   // Minimum threshold to ensure individual farms can't be identified
-   MIN_FARMS_PER_REGION = 5
+     Args:
+         metric: The farm metric to aggregate (e.g., 'soil_organic_matter')
+         region_type: Geographical aggregation level ('county', 'watershed', etc.)
+         
+     Returns:
+         DataFrame with aggregated statistics by region
+     """
+     // Minimum threshold to ensure individual farms can't be identified
+     MIN_FARMS_PER_REGION = 5
    
    # Query farms and regions
    query = """
