@@ -65,36 +65,36 @@ This module transforms complex agricultural research data into intuitive visuali
   - Scenario exploration with parameter sliders
   - Temporal progression displays
 
-```javascript
-// Example D3.js implementation for transition timeline visualization
-import * as d3 from 'd3';
-
-export class TransitionTimelineVisualization {
-  constructor(elementId, options = {}) {
-    this.elementId = elementId;
-    this.options = {
-      width: 960,
-      height: 500,
-      margins: { top: 40, right: 80, bottom: 60, left: 80 },
-      transitionYears: 5,
-      ...options
-    };
+  ```javascript
+  // Example D3.js implementation for transition timeline visualization
+  import * as d3 from 'd3';
+  
+  export class TransitionTimelineVisualization {
+    constructor(elementId, options = {}) {
+      this.elementId = elementId;
+      this.options = {
+        width: 960,
+        height: 500,
+        margins: { top: 40, right: 80, bottom: 60, left: 80 },
+        transitionYears: 5,
+        ...options
+      };
+      
+      // Initialize the visualization (abbreviated)
+      this.init();
+    }
     
-    // Initialize the visualization (abbreviated)
-    this.init();
+    init() {
+      // Setup SVG container, scales, axes, etc.
+      // Full implementation abbreviated for clarity
+    }
+    
+    update(data, metricName) {
+      // Update visualization with new data
+      // Full implementation abbreviated for clarity
+    }
   }
-  
-  init() {
-    // Setup SVG container, scales, axes, etc.
-    // Full implementation abbreviated for clarity
-  }
-  
-  update(data, metricName) {
-    // Update visualization with new data
-    // Full implementation abbreviated for clarity
-  }
-}
-```javascript
+  ```javascript
 
 ### 3.2 Economic Benefit Modeling Engine
 This engine calculates the financial implications of transitioning to agroecological practices.
