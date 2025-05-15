@@ -7,13 +7,11 @@ The AgriTransition platform is designed as a specialized OSF add-on that bridges
 
 | Frontend | GravyValet | Processing | Data Storage |
 |----------|-----------------|--------------|------------| 
-| Angular.js | Interface Layer | Celery/Redis | PostgreSQL |
-                             
-        │                        │                        │                       │
-┌───────────────┐       ┌────────────────┐       ┌────────────────┐      ┌─────────────────┐
-│User Interface │       │ OSF Integration│       │  Computation   │      │ Search Services │
-│  Components   │       │ via GravyValet │       │    Services    │      │                 │
-└───────────────┘       └────────────────┘       └────────────────┘      └─────────────────┘
+| Angular.js | Interface Layer | Celery/Redis | PostgreSQL |                  
+      │               │               │              │
+|----------|-----------------|--------------|------------|    
+User Interface Components     OSF Integration via GravyValet     Computation Services        Search Services                                      
+
 
 ## 2. Technology Stack
 
