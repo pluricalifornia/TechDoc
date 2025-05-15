@@ -94,7 +94,7 @@ export class TransitionTimelineVisualization {
     // Full implementation abbreviated for clarity
   }
 }
--------------
+```javascript
 
 ### 3.2 Economic Benefit Modeling Engine
 This engine calculates the financial implications of transitioning to agroecological practices.
