@@ -263,11 +263,11 @@ Data Anonymization: PostgreSQL functions for removing identifying information
 Permission System: Granular controls for farmer data sharing preferences
 Encryption: AES-256 for sensitive data at rest, TLS 1.3 for data in transit
 
-// Example anonymization function
-def anonymize_farm_data(farm_id, aggregation_level='county'):
-    """
-    Create anonymized version of farm data for research use
-    
+    // Example anonymization function
+    def anonymize_farm_data(farm_id, aggregation_level='county'):
+      
+      Create anonymized version of farm data for research use
+      
     Args:
         farm_id: ID of the farm to anonymize
         aggregation_level: Geographical precision level
@@ -404,77 +404,79 @@ The AgriTransition platform registers with OSF as a GravyValet add-on by impleme
 
 ### 4.2 Service Registration
 Register the AgriTransition service with GravyValet:
-// Registration in known_imps.py
-        _KnownAddonImps = {
-            # ... existing imps
-            "agritransition_storage": "addon_imps.storage.agritransition:AgriTransitionStorageImp",
-            "agritransition_archival": "addon_imps.archival.agritransition:AgriTransitionArchivalImp",
-        }
         
-        _AddonImpNumbers = {
-            # ... existing mappings
-            "agritransition_storage": 42,
-            "agritransition_archival": 43,
-        }
+        // Registration in known_imps.py
+          _KnownAddonImps = {
+            ... existing imps
+            "agritransition_storage": "addon_imps.storage.agritransition:AgriTransitionStorageImp",
+            "agritransition_archival": "addon_imps.archival.agritransition:AgriTransitionArchivalImp",                      
+            }
+            
+            _AddonImpNumbers = {
+                # ... existing mappings
+                "agritransition_storage": 42,
+                "agritransition_archival": 43,
+            }
 
 ### 4.3 Authentication Implementation
 // Service configuration example
-from addon_service.models import ExternalStorageService, OAuthClientConfig
+    
+    from addon_service.models import ExternalStorageService, OAuthClientConfig
 
-# Create OAuth client configuration
-oauth_config = OAuthClientConfig.objects.create(
-    client_id="client_id_here",
-    client_secret=encrypt("client_secret_here"),
-    token_url="https://api.agritransition.org/oauth/token",
-    auth_url="https://api.agritransition.org/oauth/authorize",
-    scope="read write",
-    extra_params={}  # Any additional OAuth parameters
-)
+  # Create OAuth client configuration
+    oauth_config = OAuthClientConfig.objects.create(
+        client_id="client_id_here",
+        client_secret=encrypt("client_secret_here"),
+        token_url="https://api.agritransition.org/oauth/token",
+        auth_url="https://api.agritransition.org/oauth/authorize",
+        scope="read write",
+        extra_params={}  # Any additional OAuth parameters
+    )
 
 # Create service record in database
-storage_service = ExternalStorageService.objects.create(
-    name="AgriTransition Storage",
-    service_type=42,  # Matches _AddonImpNumbers for agritransition_storage
-    api_url="https://api.agritransition.org/v1/",
-    auth_type="oauth2",
-    oauth_client_config=oauth_config,
-    is_enabled=True,
-    max_upload_concurrency=5,
-    additional_settings={}
-)
+    storage_service = ExternalStorageService.objects.create(
+        name="AgriTransition Storage",
+        service_type=42,  # Matches _AddonImpNumbers for agritransition_storage
+        api_url="https://api.agritransition.org/v1/",
+        auth_type="oauth2",
+        oauth_client_config=oauth_config,
+        is_enabled=True,
+        max_upload_concurrency=5,
+        additional_settings={}
+    )
 
 # Also create the archival service configuration
-from addon_service.models import ExternalArchivalService
-
-archival_service = ExternalArchivalService.objects.create(
-    name="AgriTransition Archival",
-    service_type=43,  # Matches _AddonImpNumbers for agritransition_archival
-    api_url="https://api.agritransition.org/archival/v1/",
-    auth_type="oauth2",
-    oauth_client_config=oauth_config,  # Reuse the same OAuth config
-    is_enabled=True,
-    additional_settings={}
-)
+    from addon_service.models import ExternalArchivalService
+    
+    archival_service = ExternalArchivalService.objects.create(
+        name="AgriTransition Archival",
+        service_type=43,  # Matches _AddonImpNumbers for agritransition_archival
+        api_url="https://api.agritransition.org/archival/v1/",
+        auth_type="oauth2",
+        oauth_client_config=oauth_config,  # Reuse the same OAuth config
+        is_enabled=True,
+        additional_settings={}
+    )
 
 ### 4.4 Integration with OSF Project Structure
 The AgriTransition add-on integrates with OSF's project structure by:
 
-Project Components: Creating specialized components within OSF projects for agricultural datasets
-Registrations: Supporting the creation of preregistrations for agricultural research studies
-Files: Storing and managing farm data files through WaterButler
-Metadata: Enhancing OSF metadata with agricultural-specific fields
+Project Components: Creating specialized components within OSF projects for agricultural datasets.
+Registrations: Supporting the creation of preregistrations for agricultural research studies.
+Files: Storing and managing farm data files through WaterButler.
+Metadata: Enhancing OSF metadata with agricultural-specific fields.
 
 These integrations allow researchers to:
 
-Organize agricultural datasets within their OSF projects
-Preregister farm transition studies before implementation
-Securely store and share farm data with appropriate permissions
-Apply specialized metadata to enhance discoverability of agricultural research
+Organize agricultural datasets within their OSF projects.
+Preregister farm transition studies before implementation.
+Securely store and share farm data with appropriate permissions.
+Apply specialized metadata to enhance discoverability of agricultural research.
 
-// Create an OSF preregistration template
-      def create_implementation_preregistration(implementation_plan_id):
-          """
-          Create an OSF preregistration for a farm implementation plan
+    // Create an OSF preregistration template
+          def create_implementation_preregistration(implementation_plan_id):
+              """
+              Create an OSF preregistration for a farm implementation plan
     
     Args:
         implementation_plan_id: ID of the implementation plan
@@ -526,35 +528,35 @@ Apply specialized metadata to enhance discoverability of agricultural research
 
 ## 5. Data Models
 ### 5.1 Farm Profile Schema
-CREATE TABLE farm_profiles (
-    id SERIAL PRIMARY KEY,
-    user_id UUID NOT NULL,
-    farm_name VARCHAR(255),
-    -- Using PostGIS geography type for location (lat/long)
-    location GEOGRAPHY(POINT, 4326),
-    farm_size_hectares DECIMAL(10,2),
-    current_practices JSONB,
-    soil_types JSONB,
-    climate_zone VARCHAR(50),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    privacy_settings JSONB NOT NULL DEFAULT '{}'
-);
+    CREATE TABLE farm_profiles (
+        id SERIAL PRIMARY KEY,
+        user_id UUID NOT NULL,
+        farm_name VARCHAR(255),
+        -- Using PostGIS geography type for location (lat/long)
+        location GEOGRAPHY(POINT, 4326),
+        farm_size_hectares DECIMAL(10,2),
+        current_practices JSONB,
+        soil_types JSONB,
+        climate_zone VARCHAR(50),
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        privacy_settings JSONB NOT NULL DEFAULT '{}'
+    );
 
--- PostGIS index for spatial queries
-CREATE INDEX farm_profiles_location_idx ON farm_profiles USING GIST (location);
-
--- Function to anonymize locations by returning county centroid instead of exact coordinates
-CREATE OR REPLACE FUNCTION get_anonymized_location(
-    farm_id INTEGER
-) RETURNS GEOGRAPHY AS $$
-DECLARE
-    farm_location GEOGRAPHY;
-    county_centroid GEOGRAPHY;
-BEGIN
-    -- Get the farm's exact location
-    SELECT location INTO farm_location FROM farm_profiles WHERE id = farm_id;
+    -- PostGIS index for spatial queries
+    CREATE INDEX farm_profiles_location_idx ON farm_profiles USING GIST (location);
     
+    -- Function to anonymize locations by returning county centroid instead of exact coordinates
+    CREATE OR REPLACE FUNCTION get_anonymized_location(
+        farm_id INTEGER
+    ) RETURNS GEOGRAPHY AS $$
+    DECLARE
+        farm_location GEOGRAPHY;
+        county_centroid GEOGRAPHY;
+    BEGIN
+        -- Get the farm's exact location
+        SELECT location INTO farm_location FROM farm_profiles WHERE id = farm_id;
+        
     -- This would join with a counties table to find the containing county
     -- and return its centroid instead of the exact farm location
     -- For demonstration purposes, we're using ST_Project which creates a 
@@ -565,27 +567,27 @@ BEGIN
         5000,  -- 5km distance 
         radians(45)  -- 45 degree bearing
     )::GEOGRAPHY;
-END;
-$$ LANGUAGE plpgsql;
+    END;
+    $$ LANGUAGE plpgsql;
 
 ### 5.2 Agroecological Practice Schema
-CREATE TABLE agroecological_practices (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    applicable_climate_zones VARCHAR(255)[],
-    applicable_soil_types VARCHAR(255)[],
-    applicable_farm_types VARCHAR(255)[],
-    implementation_difficulty INTEGER CHECK (implementation_difficulty BETWEEN 1 AND 5),
-    estimated_implementation_cost_range JSONB,
-    estimated_roi_timeline JSONB,
-    scientific_evidence_strength INTEGER CHECK (scientific_evidence_strength BETWEEN 1 AND 5),
-    osf_resources JSONB -- Links to OSF projects, files, etc.
-);
-
--- Full-text search index
-CREATE INDEX agroecological_practices_fts_idx ON agroecological_practices 
-USING GIN (to_tsvector('english', name || ' ' || description));
+    CREATE TABLE agroecological_practices (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        applicable_climate_zones VARCHAR(255)[],
+        applicable_soil_types VARCHAR(255)[],
+        applicable_farm_types VARCHAR(255)[],
+        implementation_difficulty INTEGER CHECK (implementation_difficulty BETWEEN 1 AND 5),
+        estimated_implementation_cost_range JSONB,
+        estimated_roi_timeline JSONB,
+        scientific_evidence_strength INTEGER CHECK (scientific_evidence_strength BETWEEN 1 AND 5),
+        osf_resources JSONB -- Links to OSF projects, files, etc.
+    );
+    
+    -- Full-text search index
+    CREATE INDEX agroecological_practices_fts_idx ON agroecological_practices 
+    USING GIN (to_tsvector('english', name || ' ' || description));
 
 ## 6. Security Implementation
 ### 6.1 SOC2 Compliance Controls
@@ -600,26 +602,27 @@ The platform implements comprehensive controls addressing all five SOC2 Trust Se
 
 6.2 GDPR Compliance Measures
 The platform implements specific technical measures to ensure GDPR compliance:
-// Example of GDPR-compliant consent tracking
-class ConsentRecord(models.Model):
-    """
-    Tracks user consent for various data processing activities
-    """
-    user = models.ForeignKey('User', on_delete=models.CASCADE)
-    consent_type = models.CharField(
-        max_length=100,
-        choices=[
-            ('basic_processing', 'Basic Data Processing'),
-            ('research_usage', 'Research Usage'),
-            ('comparative_analysis', 'Comparative Farm Analysis'),
-            ('third_party_sharing', 'Third Party Data Sharing'),
-            ('marketing', 'Marketing Communications')
-        ]
-    )
-    consented = models.BooleanField(default=False)
-    timestamp = models.DateTimeField(auto_now=True)
-    ip_address = models.GenericIPAddressField(null=True, blank=True)
-    consent_version = models.CharField(max_length=50)
+
+    // Example of GDPR-compliant consent tracking
+    class ConsentRecord(models.Model):
+        """
+        Tracks user consent for various data processing activities
+        """
+        user = models.ForeignKey('User', on_delete=models.CASCADE)
+        consent_type = models.CharField(
+            max_length=100,
+            choices=[
+                ('basic_processing', 'Basic Data Processing'),
+                ('research_usage', 'Research Usage'),
+                ('comparative_analysis', 'Comparative Farm Analysis'),
+                ('third_party_sharing', 'Third Party Data Sharing'),
+                ('marketing', 'Marketing Communications')
+            ]
+        )
+        consented = models.BooleanField(default=False)
+        timestamp = models.DateTimeField(auto_now=True)
+        ip_address = models.GenericIPAddressField(null=True, blank=True)
+        consent_version = models.CharField(max_length=50)
     
     class Meta:
         unique_together = ('user', 'consent_type')
@@ -629,12 +632,13 @@ class ConsentRecord(models.Model):
 
 ### 6.3 GravyValet Encryption Requirements
 The platform implements the required encryption procedures as specified by GravyValet:
-// Environment configuration for secure encryption
-// This would be defined in environment variables, not hardcoded
-ENVIRONMENT_CONFIG = {
-    # Primary encryption secret - high entropy value (32+ hex digits)
-    # Never hardcode this - store in secure environment variables
-    "GRAVYVALET_ENCRYPT_SECRET": "randomly_generated_secret_with_high_entropy",
+
+    // Environment configuration for secure encryption
+    // This would be defined in environment variables, not hardcoded
+    ENVIRONMENT_CONFIG = {
+        # Primary encryption secret - high entropy value (32+ hex digits)
+        # Never hardcode this - store in secure environment variables
+        "GRAVYVALET_ENCRYPT_SECRET": "randomly_generated_secret_with_high_entropy",
     
     # List of previous secrets for key rotation (comma-separated)
     "GRAVYVALET_ENCRYPT_SECRET_PRIORS": "",
@@ -647,10 +651,10 @@ ENVIRONMENT_CONFIG = {
 }
 
 # Key rotation process
-def implement_key_rotation():
-    """
-    Process for rotating encryption keys securely
-    
+    def implement_key_rotation():
+        """
+        Process for rotating encryption keys securely
+        
     1. Update environment with new secret:
        - Set GRAVYVALET_ENCRYPT_SECRET to new value
        - Add old secret to GRAVYVALET_ENCRYPT_SECRET_PRIORS
@@ -664,9 +668,9 @@ def implement_key_rotation():
     # and would be executed via Celery tasks
     
 ### 6.4 Agricultural-Specific Privacy Measures
-def blur_farm_location(lat, long, blur_radius_km=5):
-    """
-    Apply a random offset to farm coordinates to protect exact location
+    def blur_farm_location(lat, long, blur_radius_km=5):
+        """
+        Apply a random offset to farm coordinates to protect exact location
     
     Args:
         lat: Original latitude
@@ -697,8 +701,8 @@ def blur_farm_location(lat, long, blur_radius_km=5):
 
     // Agreggating data
     def aggregate_farm_data_by_region(metric, region_type='county'):
-   """
-   Aggregate individual farm data to regional level
+    """
+    // Aggregate individual farm data to regional level
    
      Args:
          metric: The farm metric to aggregate (e.g., 'soil_organic_matter')
@@ -711,47 +715,47 @@ def blur_farm_location(lat, long, blur_radius_km=5):
      MIN_FARMS_PER_REGION = 5
    
    # Query farms and regions
-   query = """
-       SELECT 
-           r.region_id,
-           r.region_name,
-           COUNT(DISTINCT f.id) AS farm_count,
-           AVG(fm.value) AS average_value,
-           STDDEV(fm.value) AS stddev_value,
-           PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY fm.value) AS percentile_25,
-           PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY fm.value) AS percentile_75
-       FROM 
-           farm_profiles f
-       JOIN 
-           regions r ON ST_Contains(r.geometry, f.location)
-       JOIN 
-           farm_metrics fm ON f.id = fm.farm_id
-       WHERE 
-           fm.metric_name = %s
-           AND r.region_type = %s
-       GROUP BY 
-           r.region_id, r.region_name
-       HAVING 
-           COUNT(DISTINCT f.id) >= %s
-   """
-   
-   with connection.cursor() as cursor:
-       cursor.execute(query, [metric, region_type, MIN_FARMS_PER_REGION])
-       columns = [col[0] for col in cursor.description]
-       results = [dict(zip(columns, row)) for row in cursor.fetchall()]
-   
-   return results
-
-   // Farm data access policy implementation
-@receiver(pre_dispatch, sender=FarmDataViewSet)
-def enforce_farm_data_access_policy(sender, request, view_instance, view_args, view_kwargs, **kwargs):
-    """
-    Enforces privacy rules before farm data is accessed
-    """
-    # Get the farm ID from the request
-    farm_id = view_kwargs.get('pk')
-    if not farm_id:
-        return
+       query = """
+           SELECT 
+               r.region_id,
+               r.region_name,
+               COUNT(DISTINCT f.id) AS farm_count,
+               AVG(fm.value) AS average_value,
+               STDDEV(fm.value) AS stddev_value,
+               PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY fm.value) AS percentile_25,
+               PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY fm.value) AS percentile_75
+           FROM 
+               farm_profiles f
+           JOIN 
+               regions r ON ST_Contains(r.geometry, f.location)
+           JOIN 
+               farm_metrics fm ON f.id = fm.farm_id
+           WHERE 
+               fm.metric_name = %s
+               AND r.region_type = %s
+           GROUP BY 
+               r.region_id, r.region_name
+           HAVING 
+               COUNT(DISTINCT f.id) >= %s
+       """
+       
+       with connection.cursor() as cursor:
+           cursor.execute(query, [metric, region_type, MIN_FARMS_PER_REGION])
+           columns = [col[0] for col in cursor.description]
+           results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+       
+       return results
+    
+       // Farm data access policy implementation
+    @receiver(pre_dispatch, sender=FarmDataViewSet)
+    def enforce_farm_data_access_policy(sender, request, view_instance, view_args, view_kwargs, **kwargs):
+        """
+        Enforces privacy rules before farm data is accessed
+        """
+        # Get the farm ID from the request
+        farm_id = view_kwargs.get('pk')
+        if not farm_id:
+            return
     
     try:
         # Get the farm profile
@@ -784,32 +788,32 @@ def enforce_farm_data_access_policy(sender, request, view_instance, view_args, v
 
 ## 7. Testing Strategy
 ### 7.1 Unit Testing
-// Example unit test for economic model
-import unittest
-from unittest.mock import patch, MagicMock
-import numpy as np
-from decimal import Decimal
-
-from agritransition.models import AgroecologicalPractice, RegionalEconomicParameters
-from agritransition.services.economic_modeling import calculate_transition_roi
-
-
-class EconomicModelTests(unittest.TestCase):
-    @patch('agritransition.services.economic_modeling.AgroecologicalPractice')
-    @patch('agritransition.services.economic_modeling.RegionalEconomicParameters')
-    def test_transition_roi_calculation(self, mock_regional_params, mock_practice):
-        """Test the ROI calculation for practice transitions"""
-        # Setup test data
-        farm_data = {
-            "id": 123,
-            "size_hectares": 100,
-            "current_yield": 5.2,
-            "soil_organic_matter": 2.1,
-            "latitude": 42.5,
-            "longitude": -76.3,
-            "labor_availability": "medium"
-        }
-        
+    // Example unit test for economic model
+    import unittest
+    from unittest.mock import patch, MagicMock
+    import numpy as np
+    from decimal import Decimal
+    
+    from agritransition.models import AgroecologicalPractice, RegionalEconomicParameters
+    from agritransition.services.economic_modeling import calculate_transition_roi
+    
+    
+    class EconomicModelTests(unittest.TestCase):
+        @patch('agritransition.services.economic_modeling.AgroecologicalPractice')
+        @patch('agritransition.services.economic_modeling.RegionalEconomicParameters')
+        def test_transition_roi_calculation(self, mock_regional_params, mock_practice):
+            """Test the ROI calculation for practice transitions"""
+            # Setup test data
+            farm_data = {
+                "id": 123,
+                "size_hectares": 100,
+                "current_yield": 5.2,
+                "soil_organic_matter": 2.1,
+                "latitude": 42.5,
+                "longitude": -76.3,
+                "labor_availability": "medium"
+            }
+            
         // Setup mock practice
         practice_instance = MagicMock()
         practice_instance.base_implementation_cost = Decimal('250.00')
@@ -867,21 +871,21 @@ class EconomicModelTests(unittest.TestCase):
         self.assertLess(fifth_year['operational_costs'], region_params.conventional_operational_costs_per_ha * farm_data['size_hectares'])  // Costs should decrease
 
 ### 7.2 Integration Testing with GraveyValet
-// Example integration test for GravyValet interface operations
-import pytest
-from unittest.mock import patch, MagicMock
-
-from addon_toolkit.interfaces.storage import ItemType
-from addon_imps.storage.agritransition import AgriTransitionStorageImp
-
-
-@pytest.mark.asyncio
-async def test_list_child_items():
-    """Test listing child items in AgriTransition storage imp"""
-    # Setup
-    mock_client = MagicMock()
-    imp = AgriTransitionStorageImp()
-    imp._client = mock_client
+    // Example integration test for GravyValet interface operations
+    import pytest
+    from unittest.mock import patch, MagicMock
+    
+    from addon_toolkit.interfaces.storage import ItemType
+    from addon_imps.storage.agritransition import AgriTransitionStorageImp
+    
+    
+    @pytest.mark.asyncio
+    async def test_list_child_items():
+        """Test listing child items in AgriTransition storage imp"""
+        # Setup
+        mock_client = MagicMock()
+        imp = AgriTransitionStorageImp()
+        imp._client = mock_client
     
     # Mock the client's response
     mock_client.list_directory.return_value = {
@@ -901,12 +905,12 @@ async def test_list_child_items():
     assert result.items[0].item_type == ItemType.FILE
 
 
-@pytest.mark.asyncio
-async def test_gravyvalet_api_integration():
-    """Test integration with the GravyValet API directly"""
-    from addon_service.core.external_services import get_external_service_client
-    from addon_service.core.auth import ExternalAccountAuth
-    
+    @pytest.mark.asyncio
+    async def test_gravyvalet_api_integration():
+        """Test integration with the GravyValet API directly"""
+        from addon_service.core.external_services import get_external_service_client
+        from addon_service.core.auth import ExternalAccountAuth
+        
     # This test would set up a mock service and auth object
     mock_auth = MagicMock(spec=ExternalAccountAuth)
     mock_auth.get_account.return_value = {"id": "test_account"}
@@ -934,17 +938,17 @@ async def test_gravyvalet_api_integration():
         )
 
 ### 7.3 End-to-End Testing
-// Example Cypress end-to-end test for practice selection workflow
-describe('Practice Selection Workflow', () => {
-  beforeEach(() => {
-    // Mock authentication
-    cy.intercept('POST', '/api/v1/auth/token/', {
-      statusCode: 200,
-      body: {
-        token: 'fake-token',
-        userId: 'test-user'
-      }
-    }).as('auth');
+    // Example Cypress end-to-end test for practice selection workflow
+    describe('Practice Selection Workflow', () => {
+      beforeEach(() => {
+        // Mock authentication
+        cy.intercept('POST', '/api/v1/auth/token/', {
+          statusCode: 200,
+          body: {
+            token: 'fake-token',
+            userId: 'test-user'
+          }
+        }).as('auth');
     
     // Mock API endpoints
     cy.intercept('GET', '/api/v1/farm-profiles/*', {
@@ -962,160 +966,161 @@ describe('Practice Selection Workflow', () => {
     cy.wait('@auth');
     cy.wait('@getFarm');
     cy.wait('@getPractices');
-  });
-  
-  it('should allow farmers to select practices based on farm characteristics', () => {
-    // Test implementation abbreviated for clarity
-    cy.get('.practice-card').should('have.length', 3);
-    cy.get('#difficulty-filter').select('Beginner');
-    cy.get('.practice-card').first().click();
-    // Additional test steps abbreviated
-  });
-});
+    });
+    
+    it('should allow farmers to select practices based on farm characteristics', () => {
+      // Test implementation abbreviated for clarity
+      cy.get('.practice-card').should('have.length', 3);
+      cy.get('#difficulty-filter').select('Beginner');
+      cy.get('.practice-card').first().click();
+      // Additional test steps abbreviated
+    });
+    });
 
 ## 8. API Documentation
 ### 8.1 GraveyValet Interface Operations
 #### 8.1.1 Storage Interface
-list_child_items(item_id: str, page_cursor: str = "", item_type: ItemType | None = None) -> ItemSampleResult
-download_file(file_id: str) -> str  # Returns download URL
-upload_file(folder_id: str, name: str, content_type: str, size: int) -> str  # Returns upload job ID
-create_folder(parent_id: str, name: str) -> FolderResult
-delete_item(item_id: str) -> None
+    list_child_items(item_id: str, page_cursor: str = "", item_type: ItemType | None = None) -> ItemSampleResult
+    download_file(file_id: str) -> str  # Returns download URL
+    upload_file(folder_id: str, name: str, content_type: str, size: int) -> str  # Returns upload job ID
+    create_folder(parent_id: str, name: str) -> FolderResult
+    delete_item(item_id: str) -> None
 
 #### 8.1.2 Archival Interface
-get_repository_info() -> RepositoryInfo
-get_dataset_info(dataset_id: str) -> DatasetInfo
-create_dataset(metadata: Dict) -> DatasetCreationResult
-publish_dataset(dataset_id: str, metadata_updates: Dict = None) -> DatasetPublishResult
+    get_repository_info() -> RepositoryInfo
+    get_dataset_info(dataset_id: str) -> DatasetInfo
+    create_dataset(metadata: Dict) -> DatasetCreationResult
+    publish_dataset(dataset_id: str, metadata_updates: Dict = None) -> DatasetPublishResult
 
 ### 8.2 RESTful API Endpoints
-AgriTransition exposes these endpoints for frontend consumption:
-GET /api/v1/farm-profiles/
-POST /api/v1/farm-profiles/
-GET /api/v1/farm-profiles/{id}/
-PUT /api/v1/farm-profiles/{id}/
-PATCH /api/v1/farm-profiles/{id}/
-DELETE /api/v1/farm-profiles/{id}/
+    AgriTransition exposes these endpoints for frontend consumption:
+    GET /api/v1/farm-profiles/
+    POST /api/v1/farm-profiles/
+    GET /api/v1/farm-profiles/{id}/
+    PUT /api/v1/farm-profiles/{id}/
+    PATCH /api/v1/farm-profiles/{id}/
+    DELETE /api/v1/farm-profiles/{id}/
 
-GET /api/v1/practices/
-GET /api/v1/practices/{id}/
-GET /api/v1/practices/{id}/evidence/
-GET /api/v1/practices/recommend/?farm_id={farm_id}
+    GET /api/v1/practices/
+    GET /api/v1/practices/{id}/
+    GET /api/v1/practices/{id}/evidence/
+    GET /api/v1/practices/recommend/?farm_id={farm_id}
 
-POST /api/v1/economic-projections/
-GET /api/v1/economic-projections/{id}/
-GET /api/v1/economic-projections/compare/?projection_ids={id1},{id2}
+    POST /api/v1/economic-projections/
+    GET /api/v1/economic-projections/{id}/
+    GET /api/v1/economic-projections/compare/?projection_ids={id1},{id2}
 
 ## 9. Deployment Architecture
 ### 9.1 Deployment
 The platform will be deployed as containerized microservices using Docker, with infrastructure defined as code using Terraform:
-// docker-compose.yml example
-version: '3.8'
-
-services:
-  # Frontend application
-  web:
-    build:
-      context: ./web
-    command: gunicorn agritransition.wsgi:application --bind 0.0.0.0:8000
+    
+    // docker-compose.yml example
+    version: '3.8'
+    
+    services:
+      # Frontend application
+      web:
+        build:
+          context: ./web
+        command: gunicorn agritransition.wsgi:application --bind 0.0.0.0:8000
+        volumes:
+          - ./web:/app
+          - static_volume:/app/static
+          - media_volume:/app/media
+        depends_on:
+          - postgres
+          - redis
+        environment:
+          - DATABASE_URL=postgres://postgres:postgres@postgres:5432/agritransition
+          - REDIS_URL=redis://redis:6379/0
+          - GRAVYVALET_URL=http://gravyvalet:8004
+          - WATERBUTLER_URL=http://waterbutler:7777
+    
+      # GravyValet instance
+      gravyvalet:
+        image: centerforopenscience/gravyvalet:latest
+        environment:
+          - DJANGO_SETTINGS_MODULE=addon_service.settings.local
+          # Important: Generate a strong random secret for production
+          # This should NEVER be hardcoded in the repository
+          - GRAVYVALET_ENCRYPT_SECRET=${GRAVYVALET_ENCRYPT_SECRET}
+        volumes:
+          - ./gravyvalet:/app
+        depends_on:
+          - postgres
+          - redis
+    
+      # PostgreSQL database
+      postgres:
+        image: postgis/postgis:14-3.2
+        volumes:
+          - postgres_data:/var/lib/postgresql/data/
+        environment:
+          - POSTGRES_PASSWORD=postgres
+          - POSTGRES_USER=postgres
+          - POSTGRES_DB=agritransition
+    
+      # Redis for caching and message broker
+      redis:
+        image: redis:6.2
+        volumes:
+          - redis_data:/data
+    
     volumes:
-      - ./web:/app
-      - static_volume:/app/static
-      - media_volume:/app/media
-    depends_on:
-      - postgres
-      - redis
-    environment:
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/agritransition
-      - REDIS_URL=redis://redis:6379/0
-      - GRAVYVALET_URL=http://gravyvalet:8004
-      - WATERBUTLER_URL=http://waterbutler:7777
-
-  # GravyValet instance
-  gravyvalet:
-    image: centerforopenscience/gravyvalet:latest
-    environment:
-      - DJANGO_SETTINGS_MODULE=addon_service.settings.local
-      # Important: Generate a strong random secret for production
-      # This should NEVER be hardcoded in the repository
-      - GRAVYVALET_ENCRYPT_SECRET=${GRAVYVALET_ENCRYPT_SECRET}
-    volumes:
-      - ./gravyvalet:/app
-    depends_on:
-      - postgres
-      - redis
-
-  # PostgreSQL database
-  postgres:
-    image: postgis/postgis:14-3.2
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=agritransition
-
-  # Redis for caching and message broker
-  redis:
-    image: redis:6.2
-    volumes:
-      - redis_data:/data
-
-volumes:
-  postgres_data:
-  redis_data:
-  static_volume:
-  media_volume:
+      postgres_data:
+      redis_data:
+      static_volume:
+      media_volume:
 
 ### 9.2 Warning and Monitoring
-// Prometheus alerting rules example
-groups:
-- name: agritransition_alerts
-  rules:
-  - alert: HighAPILatency
-    expr: avg(rate(api_response_time_seconds_sum[5m]) / rate(api_response_time_seconds_count[5m])) by (endpoint) > 1
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: "High API latency on {{ $labels.endpoint }}"
-      description: "API endpoint {{ $labels.endpoint }} has a latency of {{ $value }} seconds, which is above the threshold of 1 second."
-
-  - alert: HighErrorRate
-    expr: sum(rate(api_requests_total{status=~"5.."}[5m])) / sum(rate(api_requests_total[5m])) > 0.05
-    for: 5m
-    labels:
-      severity: critical
-    annotations:
-      summary: "High error rate on API requests"
-      description: "Error rate is {{ $value | humanizePercentage }} which is above the threshold of 5%."
-
-  - alert: DatabaseConnectionIssues
-    expr: postgresql_up == 0
-    for: 1m
-    labels:
-      severity: critical
-    annotations:
-      summary: "Database connection issue"
-      description: "The application cannot connect to the PostgreSQL database."
-
-  - alert: LowDiskSpace
-    expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 10
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: "Low disk space on {{ $labels.instance }}"
-      description: "Disk space is {{ $value | humanizePercentage }} available, which is below the threshold of 10%."
-
-  - alert: HighCPUUsage
-    expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
-    for: 5m
-    labels:
-      severity: warning
-    annotations:
-      summary: "High CPU usage on {{ $labels.instance }}"
-      description: "CPU usage is {{ $value | humanizePercentage }}, which is above the threshold of 80%."
+    // Prometheus alerting rules example
+    groups:
+    - name: agritransition_alerts
+      rules:
+      - alert: HighAPILatency
+        expr: avg(rate(api_response_time_seconds_sum[5m]) / rate(api_response_time_seconds_count[5m])) by (endpoint) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API latency on {{ $labels.endpoint }}"
+          description: "API endpoint {{ $labels.endpoint }} has a latency of {{ $value }} seconds, which is above the threshold of 1 second."
+    
+      - alert: HighErrorRate
+        expr: sum(rate(api_requests_total{status=~"5.."}[5m])) / sum(rate(api_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate on API requests"
+          description: "Error rate is {{ $value | humanizePercentage }} which is above the threshold of 5%."
+    
+      - alert: DatabaseConnectionIssues
+        expr: postgresql_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Database connection issue"
+          description: "The application cannot connect to the PostgreSQL database."
+    
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Disk space is {{ $value | humanizePercentage }} available, which is below the threshold of 10%."
+    
+      - alert: HighCPUUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value | humanizePercentage }}, which is above the threshold of 80%."
 
 ## 10. Development Workflow
 The development process follows a feature branch workflow:
@@ -1129,71 +1134,73 @@ Merge to develop after approval
 
 ### 10.1 Git Workflow and Pre-commit Hooks
 To ensure code quality, we use pre-commit hooks that run before each commit:
-// Install pre-commit
-pip install pre-commit
-
-// Set up pre-commit hooks
-pre-commit install --allow-missing-config
-
-// Example .pre-commit-config.yaml configuration
-cat > .pre-commit-config.yaml << 'EOF'
-repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
-    hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: debug-statements
-
--   repo: https://github.com/pycqa/flake8
-    rev: 6.0.0
-    hooks:
-    -   id: flake8
-        additional_dependencies: [flake8-docstrings]
-
--   repo: https://github.com/pycqa/isort
-    rev: 5.12.0
-    hooks:
-    -   id: isort
-
--   repo: https://github.com/psf/black
-    rev: 23.3.0
-    hooks:
-    -   id: black
-EOF
-
-// Run pre-commit on all files
-pre-commit run --all-files
+    
+    // Install pre-commit
+    pip install pre-commit
+    
+    // Set up pre-commit hooks
+    pre-commit install --allow-missing-config
+    
+    // Example .pre-commit-config.yaml configuration
+    cat > .pre-commit-config.yaml << 'EOF'
+    repos:
+    -   repo: https://github.com/pre-commit/pre-commit-hooks
+        rev: v4.4.0
+        hooks:
+        -   id: trailing-whitespace
+        -   id: end-of-file-fixer
+        -   id: check-yaml
+        -   id: debug-statements
+    
+    -   repo: https://github.com/pycqa/flake8
+        rev: 6.0.0
+        hooks:
+        -   id: flake8
+            additional_dependencies: [flake8-docstrings]
+    
+    -   repo: https://github.com/pycqa/isort
+        rev: 5.12.0
+        hooks:
+        -   id: isort
+    
+    -   repo: https://github.com/psf/black
+        rev: 23.3.0
+        hooks:
+        -   id: black
+    EOF
+    
+    // Run pre-commit on all files
+    pre-commit run --all-files
 
 ### 10.2 Continuous Integration Pipeline
 We will implement CI/CD using GitHub Actions:
-// .github/workflows/ci.yml example
-name: AgriTransition CI
-
-on:
-  push:
-    branches: [ develop, main, 'feature/**', 'release/**' ]
-  pull_request:
-    branches: [ develop, main ]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgis/postgis:14-3.2
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: test_agritransition
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+    
+    // .github/workflows/ci.yml example
+    name: AgriTransition CI
+    
+    on:
+      push:
+        branches: [ develop, main, 'feature/**', 'release/**' ]
+      pull_request:
+        branches: [ develop, main ]
+    
+    jobs:
+      test:
+        runs-on: ubuntu-latest
+        services:
+          postgres:
+            image: postgis/postgis:14-3.2
+            env:
+              POSTGRES_PASSWORD: postgres
+              POSTGRES_USER: postgres
+              POSTGRES_DB: test_agritransition
+            ports:
+              - 5432:5432
+            options: >-
+              --health-cmd pg_isready
+              --health-interval 10s
+              --health-timeout 5s
+              --health-retries 5
       
       redis:
         image: redis:6.2
@@ -1253,22 +1260,22 @@ Soil organic matter improvements over time
 
 These metrics are tracked through a combination of automated data collection, user surveys, and integration with farm management software systems. All metrics collection respects user privacy settings and maintains the primacy of farmer data control.
 
-// Example metrics collection setup
-from prometheus_client import Counter, Histogram, start_http_server
-import time
-
-// Define metrics
-API_REQUESTS = Counter('api_requests_total', 'Total API requests', ['endpoint', 'method', 'status'])
-RESPONSE_TIME = Histogram('api_response_time_seconds', 'API response time in seconds', ['endpoint'])
-MODEL_CALCULATION_TIME = Histogram('model_calculation_time_seconds', 'Economic model calculation time', ['model_type'])
-ACTIVE_USERS = Counter('active_users_total', 'Total active users', ['user_type'])
-PRACTICE_RECOMMENDATIONS = Counter('practice_recommendations_total', 'Total practice recommendations', ['practice_id'])
-IMPLEMENTATION_PLANS = Counter('implementation_plans_total', 'Total implementation plans created')
-
-// Middleware for recording metrics
-class MetricsMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
+    // Example metrics collection setup
+    from prometheus_client import Counter, Histogram, start_http_server
+    import time
+    
+    // Define metrics
+    API_REQUESTS = Counter('api_requests_total', 'Total API requests', ['endpoint', 'method', 'status'])
+    RESPONSE_TIME = Histogram('api_response_time_seconds', 'API response time in seconds', ['endpoint'])
+    MODEL_CALCULATION_TIME = Histogram('model_calculation_time_seconds', 'Economic model calculation time', ['model_type'])
+    ACTIVE_USERS = Counter('active_users_total', 'Total active users', ['user_type'])
+    PRACTICE_RECOMMENDATIONS = Counter('practice_recommendations_total', 'Total practice recommendations', ['practice_id'])
+    IMPLEMENTATION_PLANS = Counter('implementation_plans_total', 'Total implementation plans created')
+    
+    // Middleware for recording metrics
+    class MetricsMiddleware:
+        def __init__(self, get_response):
+            self.get_response = get_response
     
     def __call__(self, request):
         start_time = time.time()
@@ -1288,7 +1295,7 @@ class MetricsMiddleware:
         
         return response
 
-// Start metrics server
-def start_metrics_server():
-    start_http_server(8000)
+    // Start metrics server
+    def start_metrics_server():
+        start_http_server(8000)
 
